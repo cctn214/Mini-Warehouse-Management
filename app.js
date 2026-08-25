@@ -274,11 +274,6 @@ $(document).ready(function() {
   }
 
   // Bind tab clicks
-  $("#tab-dashboard").click(function() {
-    switchView("tab-dashboard", "view-dashboard");
-    refreshData();
-  });
-
   $("#tab-warehouses").click(function() {
     switchView("tab-warehouses", "view-warehouses");
     refreshData();
@@ -291,13 +286,7 @@ $(document).ready(function() {
 
   // Logo acts as home button
   $("#nav-logo").click(function() {
-    switchView("tab-dashboard", "view-dashboard");
-    refreshData();
-  });
-
-  // Dashboard shortcuts
-  $("#btn-view-all-items").click(function() {
-    switchView("tab-items", "view-items");
+    switchView("tab-warehouses", "view-warehouses");
     refreshData();
   });
 
@@ -309,19 +298,13 @@ $(document).ready(function() {
     Promise.all([getWarehouses(), getItems()])
       .then(([warehouses, items]) => {
         
-        // 1. Calculate and Render Stat Cards
-        renderStatistics(warehouses, items);
-
-        // 2. Populate Dropdowns in forms & filters
+        // 1. Populate Dropdowns in forms & filters
         populateDropdowns(warehouses);
 
-        // 3. Render Dashboard Views
-        renderDashboard(warehouses, items);
-
-        // 4. Render Warehouse Table
+        // 2. Render Warehouse Table
         renderWarehousesTable(warehouses, items);
 
-        // 5. Render Items Table
+        // 3. Render Items Table
         renderItemsTable(warehouses, items);
 
         // Re-trigger icon loading since new dynamic elements were rendered
@@ -339,41 +322,7 @@ $(document).ready(function() {
     }
   }
 
-  // Calculates total values and capacity limits
-  function renderStatistics(warehouses, items) {
-    // Set warehouse count
-    $("#stat-warehouses-count").text(warehouses.length);
 
-    // Set item count
-    $("#stat-items-count").text(items.length);
-
-    // Calculate total inventory value
-    let totalValue = 0;
-    let totalStockQty = 0;
-    items.forEach(function(item) {
-      totalValue += (parseFloat(item.price) || 0) * (parseInt(item.quantity) || 0);
-      totalStockQty += (parseInt(item.quantity) || 0);
-    });
-    $("#stat-total-value").text("$" + totalValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-
-    // Calculate warehouse capacity utilization
-    let totalMaxCapacity = 0;
-    warehouses.forEach(function(wh) {
-      totalMaxCapacity += (parseInt(wh.capacity) || 0);
-    });
-
-    let utilizationPct = 0;
-    if (totalMaxCapacity > 0) {
-      utilizationPct = Math.round((totalStockQty / totalMaxCapacity) * 100);
-      // Clamp to 100 max in visual display indicator
-      let barPct = Math.min(utilizationPct, 100);
-      $("#stat-utilization-pct").text(utilizationPct + "%");
-      $("#stat-utilization-bar").css("width", barPct + "%");
-    } else {
-      $("#stat-utilization-pct").text("0%");
-      $("#stat-utilization-bar").css("width", "0%");
-    }
-  }
 
   // Populate HTML select elements
   function populateDropdowns(warehouses) {
@@ -398,133 +347,7 @@ $(document).ready(function() {
     itemFormSelect.val(currentFormVal);
   }
 
-  // Render Dashboard sub-views (alerts, capacities list, recent additions)
-  function renderDashboard(warehouses, items) {
-    
-    // A. Render low stock items (< 10 units)
-    const lowStockAlerts = items.filter(item => parseInt(item.quantity) < 10);
-    $("#low-stock-badge").text(lowStockAlerts.length + " items");
 
-    const lowStockBody = $("#dashboard-low-stock-body");
-    lowStockBody.empty();
-
-    if (lowStockAlerts.length === 0) {
-      lowStockBody.append(`
-        <tr>
-          <td colspan="5" class="py-8 text-center text-slate-400">
-            <i data-lucide="check-circle" class="w-6 h-6 mx-auto mb-2 text-emerald-500"></i>
-            All items are well stocked (no items under 10 units).
-          </td>
-        </tr>
-      `);
-    } else {
-      lowStockAlerts.forEach(function(item) {
-        // Find warehouse name
-        const wh = warehouses.find(w => w.id === parseInt(item.warehouseId));
-        const whName = wh ? `${wh.name} (${wh.code})` : '<span class="text-rose-500 italic">Unassigned</span>';
-        
-        let qtyClass = "text-amber-600 font-semibold";
-        let statusBadge = `<span class="bg-amber-50 text-amber-700 px-2 py-0.5 rounded-full text-[10px] font-semibold border border-amber-200">Reorder Soon</span>`;
-        
-        if (parseInt(item.quantity) === 0) {
-          qtyClass = "text-rose-600 font-bold";
-          statusBadge = `<span class="bg-rose-50 text-rose-700 px-2 py-0.5 rounded-full text-[10px] font-bold border border-rose-200">Out of Stock</span>`;
-        }
-
-        const row = `
-          <tr class="hover:bg-slate-50 transition-colors">
-            <td class="py-3 px-1 font-semibold text-navy-800">${item.sku}</td>
-            <td class="py-3 px-1">${item.name}</td>
-            <td class="py-3 px-1 text-slate-500">${whName}</td>
-            <td class="py-3 px-1 text-right ${qtyClass}">${item.quantity}</td>
-            <td class="py-3 px-1 text-center">${statusBadge}</td>
-          </tr>
-        `;
-        lowStockBody.append(row);
-      });
-    }
-
-    // B. Render capacities status list
-    const capacitiesContainer = $("#dashboard-capacities-list");
-    capacitiesContainer.empty();
-
-    if (warehouses.length === 0) {
-      capacitiesContainer.append(`
-        <div class="text-center text-slate-400 py-8">
-          <i data-lucide="info" class="w-6 h-6 mx-auto mb-2"></i>
-          No warehouses available.
-        </div>
-      `);
-    } else {
-      warehouses.forEach(function(wh) {
-        // Calculate total items currently allocated
-        const whItems = items.filter(item => parseInt(item.warehouseId) === wh.id);
-        let currentQty = 0;
-        whItems.forEach(item => currentQty += parseInt(item.quantity));
-
-        const capacity = parseInt(wh.capacity) || 1;
-        const pct = Math.round((currentQty / capacity) * 100);
-        let progressColor = "bg-sky-500";
-        if (pct > 75 && pct <= 95) progressColor = "bg-amber-500";
-        if (pct > 95) progressColor = "bg-rose-500";
-
-        const card = `
-          <div class="bg-slate-50 border border-slate-150 rounded-xl p-3.5 space-y-2.5">
-            <div class="flex justify-between items-start">
-              <div>
-                <h4 class="text-xs font-bold text-navy-900">${wh.name}</h4>
-                <p class="text-[10px] text-slate-400">${wh.location} | Code: ${wh.code}</p>
-              </div>
-              <span class="text-xs font-semibold ${pct > 95 ? 'text-rose-600' : 'text-slate-500'}">${currentQty} / ${capacity} units</span>
-            </div>
-            <div>
-              <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
-                <div class="${progressColor} h-full rounded-full transition-all duration-300" style="width: ${Math.min(pct, 100)}%"></div>
-              </div>
-              <div class="flex justify-between items-center text-[10px] mt-1.5">
-                <span class="text-slate-400">Total Utilization</span>
-                <span class="font-bold text-slate-600">${pct}%</span>
-              </div>
-            </div>
-          </div>
-        `;
-        capacitiesContainer.append(card);
-      });
-    }
-
-    // C. Render recent additions (Last 5 items)
-    const recentItems = [...items].reverse().slice(0, 5);
-    const recentBody = $("#dashboard-recent-items-body");
-    recentBody.empty();
-
-    if (recentItems.length === 0) {
-      recentBody.append(`
-        <tr>
-          <td colspan="6" class="py-8 text-center text-slate-400">No items available. Add inventory items.</td>
-        </tr>
-      `);
-    } else {
-      recentItems.forEach(function(item) {
-        const wh = warehouses.find(w => w.id === parseInt(item.warehouseId));
-        const whName = wh ? `${wh.name} (${wh.code})` : '<span class="text-rose-500 italic">Unassigned</span>';
-        const price = parseFloat(item.price) || 0;
-        const qty = parseInt(item.quantity) || 0;
-        const total = price * qty;
-
-        const row = `
-          <tr class="hover:bg-slate-50 transition-colors">
-            <td class="py-3.5 px-4 font-semibold text-navy-900">${item.sku}</td>
-            <td class="py-3.5 px-4 font-medium">${item.name}</td>
-            <td class="py-3.5 px-4 text-slate-500">${whName}</td>
-            <td class="py-3.5 px-4 text-right text-slate-600">$${price.toFixed(2)}</td>
-            <td class="py-3.5 px-4 text-right font-medium">${qty}</td>
-            <td class="py-3.5 px-4 text-right font-semibold text-navy-950">$${total.toFixed(2)}</td>
-          </tr>
-        `;
-        recentBody.append(row);
-      });
-    }
-  }
 
   // Render Warehouse View Table
   function renderWarehousesTable(warehouses, items) {
@@ -720,7 +543,7 @@ $(document).ready(function() {
   // --- WAREHOUSE CRUD FORM HANDLER ---
 
   // Click Add Warehouse button (Main Navigation header/quick actions)
-  $("#btn-add-warehouse, #btn-quick-warehouse").click(function() {
+  $("#btn-add-warehouse").click(function() {
     // Reset form fields
     $("#form-warehouse")[0].reset();
     $("#warehouse-id").val(""); // empty means adding
@@ -821,7 +644,7 @@ $(document).ready(function() {
   // --- ITEM CRUD FORM HANDLER ---
 
   // Click Add Item button
-  $("#btn-add-item, #btn-quick-item").click(function() {
+  $("#btn-add-item").click(function() {
     // Check if any warehouses exist first. If not, alert!
     getWarehouses().then(warehouses => {
       if (warehouses.length === 0) {
