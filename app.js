@@ -10,22 +10,22 @@
 // 1. DATABASE MODULE (IndexedDB)
 // ==========================================
 
-const DB_NAME = "CytanWarehouseDB";
-const DB_VERSION = 1;
-let dbInstance = null;
+var DB_NAME = "CytanWarehouseDB";
+var DB_VERSION = 1;
+var dbInstance = null;
 
 /**
  * Initializes the IndexedDB database.
  * Creates 'warehouses' and 'items' object stores if they do not exist.
  */
 function initDB() {
-  return new Promise((resolve, reject) => {
+  return new Promise(function(resolve, reject) {
     // Open connection
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    var request = indexedDB.open(DB_NAME, DB_VERSION);
 
     // Run when database version increases or is first created
     request.onupgradeneeded = function(event) {
-      const db = event.target.result;
+      var db = event.target.result;
 
       // Create warehouses store (keyPath is 'id', autoIncrement is true)
       if (!db.objectStoreNames.contains("warehouses")) {
@@ -58,13 +58,10 @@ function initDB() {
 // --- WAREHOUSE CRUD FUNCTIONS ---
 
 function getWarehouses() {
-  return new Promise((resolve, reject) => {
-    // Open read-only transaction on warehouses
-    const transaction = dbInstance.transaction(["warehouses"], "readonly");
-    const store = transaction.objectStore("warehouses");
-    
-    // Get all records
-    const request = store.getAll();
+  return new Promise(function(resolve, reject) {
+    var transaction = dbInstance.transaction(["warehouses"], "readonly");
+    var store = transaction.objectStore("warehouses");
+    var request = store.getAll();
 
     request.onsuccess = function() {
       resolve(request.result || []);
@@ -77,12 +74,10 @@ function getWarehouses() {
 }
 
 function getWarehouse(id) {
-  return new Promise((resolve, reject) => {
-    const transaction = dbInstance.transaction(["warehouses"], "readonly");
-    const store = transaction.objectStore("warehouses");
-    
-    // Get a specific record by numeric ID
-    const request = store.get(id);
+  return new Promise(function(resolve, reject) {
+    var transaction = dbInstance.transaction(["warehouses"], "readonly");
+    var store = transaction.objectStore("warehouses");
+    var request = store.get(id);
 
     request.onsuccess = function() {
       resolve(request.result);
@@ -95,13 +90,10 @@ function getWarehouse(id) {
 }
 
 function addWarehouse(warehouse) {
-  return new Promise((resolve, reject) => {
-    // Open read-write transaction
-    const transaction = dbInstance.transaction(["warehouses"], "readwrite");
-    const store = transaction.objectStore("warehouses");
-    
-    // Save record (auto-increment will assign id)
-    const request = store.add(warehouse);
+  return new Promise(function(resolve, reject) {
+    var transaction = dbInstance.transaction(["warehouses"], "readwrite");
+    var store = transaction.objectStore("warehouses");
+    var request = store.add(warehouse);
 
     request.onsuccess = function() {
       resolve(request.result);
@@ -114,12 +106,10 @@ function addWarehouse(warehouse) {
 }
 
 function updateWarehouse(warehouse) {
-  return new Promise((resolve, reject) => {
-    const transaction = dbInstance.transaction(["warehouses"], "readwrite");
-    const store = transaction.objectStore("warehouses");
-    
-    // Put replaces the existing object with matching id
-    const request = store.put(warehouse);
+  return new Promise(function(resolve, reject) {
+    var transaction = dbInstance.transaction(["warehouses"], "readwrite");
+    var store = transaction.objectStore("warehouses");
+    var request = store.put(warehouse);
 
     request.onsuccess = function() {
       resolve(request.result);
@@ -132,11 +122,10 @@ function updateWarehouse(warehouse) {
 }
 
 function deleteWarehouse(id) {
-  return new Promise((resolve, reject) => {
-    const transaction = dbInstance.transaction(["warehouses"], "readwrite");
-    const store = transaction.objectStore("warehouses");
-    
-    const request = store.delete(id);
+  return new Promise(function(resolve, reject) {
+    var transaction = dbInstance.transaction(["warehouses"], "readwrite");
+    var store = transaction.objectStore("warehouses");
+    var request = store.delete(id);
 
     request.onsuccess = function() {
       resolve();
@@ -151,11 +140,10 @@ function deleteWarehouse(id) {
 // --- ITEM CRUD FUNCTIONS ---
 
 function getItems() {
-  return new Promise((resolve, reject) => {
-    const transaction = dbInstance.transaction(["items"], "readonly");
-    const store = transaction.objectStore("items");
-    
-    const request = store.getAll();
+  return new Promise(function(resolve, reject) {
+    var transaction = dbInstance.transaction(["items"], "readonly");
+    var store = transaction.objectStore("items");
+    var request = store.getAll();
 
     request.onsuccess = function() {
       resolve(request.result || []);
@@ -168,11 +156,10 @@ function getItems() {
 }
 
 function getItem(id) {
-  return new Promise((resolve, reject) => {
-    const transaction = dbInstance.transaction(["items"], "readonly");
-    const store = transaction.objectStore("items");
-    
-    const request = store.get(id);
+  return new Promise(function(resolve, reject) {
+    var transaction = dbInstance.transaction(["items"], "readonly");
+    var store = transaction.objectStore("items");
+    var request = store.get(id);
 
     request.onsuccess = function() {
       resolve(request.result);
@@ -185,11 +172,10 @@ function getItem(id) {
 }
 
 function addItem(item) {
-  return new Promise((resolve, reject) => {
-    const transaction = dbInstance.transaction(["items"], "readwrite");
-    const store = transaction.objectStore("items");
-    
-    const request = store.add(item);
+  return new Promise(function(resolve, reject) {
+    var transaction = dbInstance.transaction(["items"], "readwrite");
+    var store = transaction.objectStore("items");
+    var request = store.add(item);
 
     request.onsuccess = function() {
       resolve(request.result);
@@ -202,11 +188,10 @@ function addItem(item) {
 }
 
 function updateItem(item) {
-  return new Promise((resolve, reject) => {
-    const transaction = dbInstance.transaction(["items"], "readwrite");
-    const store = transaction.objectStore("items");
-    
-    const request = store.put(item);
+  return new Promise(function(resolve, reject) {
+    var transaction = dbInstance.transaction(["items"], "readwrite");
+    var store = transaction.objectStore("items");
+    var request = store.put(item);
 
     request.onsuccess = function() {
       resolve(request.result);
@@ -219,11 +204,10 @@ function updateItem(item) {
 }
 
 function deleteItem(id) {
-  return new Promise((resolve, reject) => {
-    const transaction = dbInstance.transaction(["items"], "readwrite");
-    const store = transaction.objectStore("items");
-    
-    const request = store.delete(id);
+  return new Promise(function(resolve, reject) {
+    var transaction = dbInstance.transaction(["items"], "readwrite");
+    var store = transaction.objectStore("items");
+    var request = store.delete(id);
 
     request.onsuccess = function() {
       resolve();
@@ -243,15 +227,15 @@ function deleteItem(id) {
 $(document).ready(function() {
   
   // Track warehouse ID pending deletion for relationship management modal
-  let warehouseIdToDelete = null;
+  var warehouseIdToDelete = null;
 
   // Initialize DB and Load Data
   initDB()
-    .then(() => {
+    .then(function() {
       refreshData();
       initializeLucide();
     })
-    .catch((err) => {
+    .catch(function(err) {
       showToast("Failed to initialize database: " + err, true);
     });
 
@@ -294,10 +278,12 @@ $(document).ready(function() {
   // --- DATA REFRESH & RENDER ENGINE ---
 
   function refreshData() {
-    // Parallel promise fetching for clean sync
+    // Fetch data in parallel
     Promise.all([getWarehouses(), getItems()])
-      .then(([warehouses, items]) => {
-        
+      .then(function(results) {
+        var warehouses = results[0];
+        var items = results[1];
+
         // 1. Populate Dropdowns in forms & filters
         populateDropdowns(warehouses);
 
@@ -310,7 +296,7 @@ $(document).ready(function() {
         // Re-trigger icon loading since new dynamic elements were rendered
         initializeLucide();
       })
-      .catch((err) => {
+      .catch(function(err) {
         showToast("Error retrieving database data: " + err, true);
       });
   }
@@ -322,36 +308,32 @@ $(document).ready(function() {
     }
   }
 
-
-
   // Populate HTML select elements
   function populateDropdowns(warehouses) {
-    // 1. Filter dropdown on Items page
-    const filterSelect = $("#filter-item-warehouse");
-    const currentFilterVal = filterSelect.val() || "all";
+    var filterSelect = $("#filter-item-warehouse");
+    var currentFilterVal = filterSelect.val() || "all";
     filterSelect.empty().append('<option value="all">All Warehouses</option>');
     
-    // 2. Select dropdown in Item Modal form
-    const itemFormSelect = $("#item-warehouse");
-    const currentFormVal = itemFormSelect.val() || "";
+    var itemFormSelect = $("#item-warehouse");
+    var currentFormVal = itemFormSelect.val() || "";
     itemFormSelect.empty().append('<option value="" disabled selected>Select location...</option>');
 
-    warehouses.forEach(function(wh) {
-      const optionHtml = `<option value="${wh.id}">${wh.name} (${wh.code})</option>`;
+    // Standard for loop instead of forEach
+    for (var i = 0; i < warehouses.length; i++) {
+      var wh = warehouses[i];
+      var optionHtml = '<option value="' + wh.id + '">' + wh.name + ' (' + wh.code + ')</option>';
       filterSelect.append(optionHtml);
       itemFormSelect.append(optionHtml);
-    });
+    }
 
     // Restore selected values if still valid
     filterSelect.val(currentFilterVal);
     itemFormSelect.val(currentFormVal);
   }
 
-
-
   // Render Warehouse View Table
   function renderWarehousesTable(warehouses, items) {
-    const tableBody = $("#warehouses-table-body");
+    var tableBody = $("#warehouses-table-body");
     tableBody.empty();
 
     if (warehouses.length === 0) {
@@ -367,19 +349,30 @@ $(document).ready(function() {
       return;
     }
 
-    warehouses.forEach(function(wh) {
-      // Find count of items in this warehouse
-      const whItems = items.filter(item => parseInt(item.warehouseId) === wh.id);
-      const uniqueItemTypes = whItems.length;
+    // Standard for loop instead of forEach
+    for (var i = 0; i < warehouses.length; i++) {
+      var wh = warehouses[i];
+
+      // Find count of items and total stock quantity in this warehouse using a simple loop
+      var whItems = [];
+      for (var j = 0; j < items.length; j++) {
+        if (parseInt(items[j].warehouseId) === wh.id) {
+          whItems.push(items[j]);
+        }
+      }
+
+      var uniqueItemTypes = whItems.length;
       
-      let totalStock = 0;
-      whItems.forEach(item => totalStock += parseInt(item.quantity) || 0);
+      var totalStock = 0;
+      for (var k = 0; k < whItems.length; k++) {
+        totalStock += parseInt(whItems[k].quantity) || 0;
+      }
 
-      const capacity = parseInt(wh.capacity) || 1;
-      const utilization = Math.round((totalStock / capacity) * 100);
+      var capacity = parseInt(wh.capacity) || 1;
+      var utilization = Math.round((totalStock / capacity) * 100);
 
-      let utilizationBarColor = "bg-emerald-500";
-      let utilizationTextColor = "text-emerald-700";
+      var utilizationBarColor = "bg-emerald-500";
+      var utilizationTextColor = "text-emerald-700";
       if (utilization > 75 && utilization <= 95) {
         utilizationBarColor = "bg-amber-500";
         utilizationTextColor = "text-amber-700";
@@ -388,7 +381,7 @@ $(document).ready(function() {
         utilizationTextColor = "text-rose-700";
       }
 
-      const row = `
+      var row = `
         <tr class="hover:bg-slate-50/50 transition-colors">
           <td class="py-4 px-6 font-bold text-navy-900">${wh.code}</td>
           <td class="py-4 px-6 font-medium text-slate-900">${wh.name}</td>
@@ -416,28 +409,40 @@ $(document).ready(function() {
         </tr>
       `;
       tableBody.append(row);
-    });
+    }
   }
 
   // Render Items View Table with searching and warehouse filters
   function renderItemsTable(warehouses, items) {
-    const tableBody = $("#items-table-body");
+    var tableBody = $("#items-table-body");
     tableBody.empty();
 
-    const searchQuery = ($("#filter-item-search").val() || "").toLowerCase().trim();
-    const whFilter = $("#filter-item-warehouse").val() || "all";
+    var searchQuery = ($("#filter-item-search").val() || "").toLowerCase().trim();
+    var whFilter = $("#filter-item-warehouse").val() || "all";
 
-    // Filter items array
-    let filteredItems = items.filter(function(item) {
-      // 1. Search Query filter (matches SKU or Name)
-      const matchesSearch = item.name.toLowerCase().includes(searchQuery) || 
-                            item.sku.toLowerCase().includes(searchQuery);
+    // Filter items array manually using a simple loop
+    var filteredItems = [];
+    for (var i = 0; i < items.length; i++) {
+      var item = items[i];
       
-      // 2. Warehouse filter
-      const matchesWarehouse = (whFilter === "all") || (parseInt(item.warehouseId) === parseInt(whFilter));
+      // 1. Search Query check
+      var matchesSearch = item.name.toLowerCase().indexOf(searchQuery) !== -1 || 
+                          item.sku.toLowerCase().indexOf(searchQuery) !== -1;
+      
+      // 2. Warehouse Filter check
+      var matchesWarehouse = false;
+      if (whFilter === "all") {
+        matchesWarehouse = true;
+      } else {
+        if (parseInt(item.warehouseId) === parseInt(whFilter)) {
+          matchesWarehouse = true;
+        }
+      }
 
-      return matchesSearch && matchesWarehouse;
-    });
+      if (matchesSearch && matchesWarehouse) {
+        filteredItems.push(item);
+      }
+    }
 
     if (filteredItems.length === 0) {
       tableBody.append(`
@@ -452,22 +457,40 @@ $(document).ready(function() {
       return;
     }
 
-    filteredItems.forEach(function(item) {
-      const wh = warehouses.find(w => w.id === parseInt(item.warehouseId));
-      const whName = wh ? `${wh.name} (${wh.code})` : '<span class="text-rose-500 italic">Unassigned</span>';
-      
-      const price = parseFloat(item.price) || 0;
-      const qty = parseInt(item.quantity) || 0;
-      const valuation = price * qty;
+    // Loop through results and render
+    for (var i = 0; i < filteredItems.length; i++) {
+      var item = filteredItems[i];
 
-      let qtyTextClass = "text-slate-900";
-      if (qty === 0) {
-        qtyTextClass = "text-rose-600 font-bold";
-      } else if (qty < 10) {
-        qtyTextClass = "text-amber-600 font-semibold";
+      // Find warehouse name manually using a simple loop
+      var wh = null;
+      for (var j = 0; j < warehouses.length; j++) {
+        if (warehouses[j].id === parseInt(item.warehouseId)) {
+          wh = warehouses[j];
+          break;
+        }
       }
 
-      const row = `
+      var whName = '<span class="text-rose-500 italic">Unassigned</span>';
+      if (wh) {
+        whName = wh.name + " (" + wh.code + ")";
+      }
+      
+      var price = parseFloat(item.price) || 0;
+      var qty = parseInt(item.quantity) || 0;
+      var valuation = price * qty;
+
+      var qtyTextClass = "text-slate-900";
+      var statusSubtext = "";
+
+      if (qty === 0) {
+        qtyTextClass = "text-rose-600 font-bold";
+        statusSubtext = '<span class="block text-[9px] text-rose-500 tracking-wide uppercase font-bold mt-0.5">OUT</span>';
+      } else if (qty > 0 && qty < 10) {
+        qtyTextClass = "text-amber-600 font-semibold";
+        statusSubtext = '<span class="block text-[9px] text-amber-500 tracking-wide uppercase font-bold mt-0.5">LOW</span>';
+      }
+
+      var row = `
         <tr class="hover:bg-slate-50/50 transition-colors">
           <td class="py-4 px-6 font-bold text-navy-900">${item.sku}</td>
           <td class="py-4 px-6 font-medium text-slate-900">${item.name}</td>
@@ -475,8 +498,7 @@ $(document).ready(function() {
           <td class="py-4 px-6 text-right font-medium text-slate-600">$${price.toFixed(2)}</td>
           <td class="py-4 px-6 text-right font-semibold ${qtyTextClass}">
             ${qty}
-            ${qty === 0 ? '<span class="block text-[9px] text-rose-500 tracking-wide uppercase font-bold mt-0.5">OUT</span>' : ''}
-            ${qty > 0 && qty < 10 ? '<span class="block text-[9px] text-amber-500 tracking-wide uppercase font-bold mt-0.5">LOW</span>' : ''}
+            ${statusSubtext}
           </td>
           <td class="py-4 px-6 text-right font-bold text-navy-950">$${valuation.toFixed(2)}</td>
           <td class="py-4 px-6 text-center">
@@ -492,13 +514,13 @@ $(document).ready(function() {
         </tr>
       `;
       tableBody.append(row);
-    });
+    }
   }
 
   // Trigger filters on input change
   $("#filter-item-search").on("input", function() {
-    getItems().then(items => {
-      getWarehouses().then(warehouses => {
+    getItems().then(function(items) {
+      getWarehouses().then(function(warehouses) {
         renderItemsTable(warehouses, items);
         initializeLucide();
       });
@@ -506,8 +528,8 @@ $(document).ready(function() {
   });
 
   $("#filter-item-warehouse").on("change", function() {
-    getItems().then(items => {
-      getWarehouses().then(warehouses => {
+    getItems().then(function(items) {
+      getWarehouses().then(function(warehouses) {
         renderItemsTable(warehouses, items);
         initializeLucide();
       });
@@ -519,23 +541,21 @@ $(document).ready(function() {
 
   // Opens a target modal and animates it
   function openModal(modalId) {
-    const modal = $("#" + modalId);
+    var modal = $("#" + modalId);
     modal.removeClass("hidden");
-    
-    // Scale animation bounce effect
     modal.find(".relative").removeClass("scale-95").addClass("scale-100");
   }
 
   // Closes a target modal
   function closeModal(modalId) {
-    const modal = $("#" + modalId);
+    var modal = $("#" + modalId);
     modal.find(".relative").removeClass("scale-100").addClass("scale-95");
     modal.addClass("hidden");
   }
 
   // Close modals clicking Cancel or X icons
   $(".btn-close-modal").click(function() {
-    const modalId = $(this).attr("data-modal");
+    var modalId = $(this).attr("data-modal");
     closeModal(modalId);
   });
 
@@ -544,7 +564,6 @@ $(document).ready(function() {
 
   // Click Add Warehouse button (Main Navigation header/quick actions)
   $("#btn-add-warehouse").click(function() {
-    // Reset form fields
     $("#form-warehouse")[0].reset();
     $("#warehouse-id").val(""); // empty means adding
     $("#modal-warehouse-title").text("Add New Warehouse");
@@ -553,12 +572,11 @@ $(document).ready(function() {
 
   // Handle Edit Warehouse click
   $(document).on("click", ".btn-edit-wh", function() {
-    const whId = parseInt($(this).attr("data-id"));
+    var whId = parseInt($(this).attr("data-id"));
     
     getWarehouse(whId)
-      .then((wh) => {
+      .then(function(wh) {
         if (!wh) return;
-        // Populate modal fields
         $("#warehouse-id").val(wh.id);
         $("#warehouse-code").val(wh.code);
         $("#warehouse-name").val(wh.name);
@@ -568,7 +586,7 @@ $(document).ready(function() {
         $("#modal-warehouse-title").text("Edit Warehouse Settings");
         openModal("modal-warehouse");
       })
-      .catch((err) => {
+      .catch(function(err) {
         showToast("Error reading warehouse records: " + err, true);
       });
   });
@@ -577,10 +595,10 @@ $(document).ready(function() {
   $("#form-warehouse").submit(function(event) {
     event.preventDefault();
 
-    const whIdVal = $("#warehouse-id").val();
-    const isEdit = whIdVal !== "";
+    var whIdVal = $("#warehouse-id").val();
+    var isEdit = whIdVal !== "";
 
-    const warehouseData = {
+    var warehouseData = {
       code: $("#warehouse-code").val().trim(),
       name: $("#warehouse-name").val().trim(),
       location: $("#warehouse-location").val().trim(),
@@ -593,9 +611,16 @@ $(document).ready(function() {
 
     // Code uniqueness validation
     getWarehouses()
-      .then((warehouses) => {
-        // If code is already used by another warehouse
-        const codeConflict = warehouses.some(w => w.code.toUpperCase() === warehouseData.code.toUpperCase() && w.id !== warehouseData.id);
+      .then(function(warehouses) {
+        // If code is already used by another warehouse manually checked in a loop
+        var codeConflict = false;
+        for (var i = 0; i < warehouses.length; i++) {
+          if (warehouses[i].code.toUpperCase() === warehouseData.code.toUpperCase() && warehouses[i].id !== warehouseData.id) {
+            codeConflict = true;
+            break;
+          }
+        }
+
         if (codeConflict) {
           showToast("A warehouse with code '" + warehouseData.code + "' already exists.", true);
           return;
@@ -603,39 +628,47 @@ $(document).ready(function() {
 
         // If editing: Check capacity is not smaller than current actual inventory size!
         if (isEdit) {
-          getItems().then((items) => {
-            const whItems = items.filter(item => parseInt(item.warehouseId) === warehouseData.id);
-            let currentQty = 0;
-            whItems.forEach(item => currentQty += parseInt(item.quantity) || 0);
+          getItems().then(function(items) {
+            
+            // Filter warehouse items manually
+            var whItems = [];
+            for (var i = 0; i < items.length; i++) {
+              if (parseInt(items[i].warehouseId) === warehouseData.id) {
+                whItems.push(items[i]);
+              }
+            }
+
+            var currentQty = 0;
+            for (var j = 0; j < whItems.length; j++) {
+              currentQty += parseInt(whItems[j].quantity) || 0;
+            }
 
             if (warehouseData.capacity < currentQty) {
               showToast("Capacity cannot be less than current stored inventory quantity (" + currentQty + " units).", true);
               return;
             }
 
-            // Save updates
             saveWarehouseRecord(warehouseData, true);
           });
         } else {
-          // Save inserts
           saveWarehouseRecord(warehouseData, false);
         }
       })
-      .catch((err) => {
+      .catch(function(err) {
         showToast("Database error validation: " + err, true);
       });
   });
 
   function saveWarehouseRecord(data, isEdit) {
-    const dbAction = isEdit ? updateWarehouse(data) : addWarehouse(data);
+    var dbAction = isEdit ? updateWarehouse(data) : addWarehouse(data);
 
     dbAction
-      .then(() => {
+      .then(function() {
         closeModal("modal-warehouse");
         refreshData();
-        showToast(`Warehouse '${data.name}' saved successfully.`);
+        showToast("Warehouse '" + data.name + "' saved successfully.");
       })
-      .catch((err) => {
+      .catch(function(err) {
         showToast("Could not save warehouse record: " + err, true);
       });
   }
@@ -645,14 +678,12 @@ $(document).ready(function() {
 
   // Click Add Item button
   $("#btn-add-item").click(function() {
-    // Check if any warehouses exist first. If not, alert!
-    getWarehouses().then(warehouses => {
+    getWarehouses().then(function(warehouses) {
       if (warehouses.length === 0) {
         showToast("Create a warehouse before adding items.", true);
         return;
       }
       
-      // Reset form
       $("#form-item")[0].reset();
       $("#item-id").val("");
       $("#modal-item-title").text("Add Inventory Item");
@@ -662,13 +693,12 @@ $(document).ready(function() {
 
   // Handle Edit Item click
   $(document).on("click", ".btn-edit-item", function() {
-    const itemId = parseInt($(this).attr("data-id"));
+    var itemId = parseInt($(this).attr("data-id"));
     
     getItem(itemId)
-      .then((item) => {
+      .then(function(item) {
         if (!item) return;
 
-        // Populate fields
         $("#item-id").val(item.id);
         $("#item-sku").val(item.sku);
         $("#item-name").val(item.name);
@@ -679,7 +709,7 @@ $(document).ready(function() {
         $("#modal-item-title").text("Edit Inventory Item");
         openModal("modal-item");
       })
-      .catch((err) => {
+      .catch(function(err) {
         showToast("Error retrieving item: " + err, true);
       });
   });
@@ -688,10 +718,10 @@ $(document).ready(function() {
   $("#form-item").submit(function(event) {
     event.preventDefault();
 
-    const itemIdVal = $("#item-id").val();
-    const isEdit = itemIdVal !== "";
+    var itemIdVal = $("#item-id").val();
+    var isEdit = itemIdVal !== "";
 
-    const itemData = {
+    var itemData = {
       sku: $("#item-sku").val().trim().toUpperCase(),
       name: $("#item-name").val().trim(),
       warehouseId: parseInt($("#item-warehouse").val()),
@@ -705,49 +735,74 @@ $(document).ready(function() {
 
     // Capacity limit validation and SKU uniqueness check
     Promise.all([getWarehouses(), getItems()])
-      .then(([warehouses, items]) => {
-        // 1. SKU Conflict check
-        const skuConflict = items.some(item => item.sku === itemData.sku && item.id !== itemData.id);
+      .then(function(results) {
+        var warehouses = results[0];
+        var items = results[1];
+
+        // 1. SKU Conflict check manually in a loop
+        var skuConflict = false;
+        for (var i = 0; i < items.length; i++) {
+          if (items[i].sku === itemData.sku && items[i].id !== itemData.id) {
+            skuConflict = true;
+            break;
+          }
+        }
+
         if (skuConflict) {
           showToast("Item SKU code '" + itemData.sku + "' already exists.", true);
           return;
         }
 
-        // 2. Capacity Limit validation
-        const targetWh = warehouses.find(w => w.id === itemData.warehouseId);
+        // 2. Capacity Limit validation manually
+        var targetWh = null;
+        for (var j = 0; j < warehouses.length; j++) {
+          if (warehouses[j].id === itemData.warehouseId) {
+            targetWh = warehouses[j];
+            break;
+          }
+        }
+
         if (!targetWh) {
           showToast("Target warehouse was not found.", true);
           return;
         }
 
         // Get count of items already stored in that warehouse (excluding the item we are currently editing)
-        const whItems = items.filter(item => parseInt(item.warehouseId) === itemData.warehouseId && item.id !== itemData.id);
-        let storedQty = 0;
-        whItems.forEach(item => storedQty += parseInt(item.quantity) || 0);
+        var whItems = [];
+        for (var k = 0; k < items.length; k++) {
+          if (parseInt(items[k].warehouseId) === itemData.warehouseId && items[k].id !== itemData.id) {
+            whItems.push(items[k]);
+          }
+        }
+
+        var storedQty = 0;
+        for (var m = 0; m < whItems.length; m++) {
+          storedQty += parseInt(whItems[m].quantity) || 0;
+        }
 
         // Sum with the input quantity
-        const totalProjectedQty = storedQty + itemData.quantity;
-        const capacity = parseInt(targetWh.capacity);
+        var totalProjectedQty = storedQty + itemData.quantity;
+        var capacity = parseInt(targetWh.capacity);
 
         if (totalProjectedQty > capacity) {
-          const remainingSpace = Math.max(0, capacity - storedQty);
-          showToast(`Warehouse capacity exceeded. Only ${remainingSpace} units of space available in '${targetWh.name}'.`, true);
+          var remainingSpace = Math.max(0, capacity - storedQty);
+          showToast("Warehouse capacity exceeded. Only " + remainingSpace + " units of space available in '" + targetWh.name + "'.", true);
           return;
         }
 
         // Save
-        const dbAction = isEdit ? updateItem(itemData) : addItem(itemData);
+        var dbAction = isEdit ? updateItem(itemData) : addItem(itemData);
         dbAction
-          .then(() => {
+          .then(function() {
             closeModal("modal-item");
             refreshData();
-            showToast(`Item '${itemData.name}' saved successfully.`);
+            showToast("Item '" + itemData.name + "' saved successfully.");
           })
-          .catch((err) => {
+          .catch(function(err) {
             showToast("Failed to write item record: " + err, true);
           });
       })
-      .catch((err) => {
+      .catch(function(err) {
         showToast("Error processing inventory: " + err, true);
       });
   });
@@ -757,14 +812,19 @@ $(document).ready(function() {
 
   // A. Delete Warehouse Action
   $(document).on("click", ".btn-delete-wh", function() {
-    const whId = parseInt($(this).attr("data-id"));
-    const whName = $(this).attr("data-name");
+    var whId = parseInt($(this).attr("data-id"));
+    var whName = $(this).attr("data-name");
     warehouseIdToDelete = whId;
 
-    // Check if there are items linked to this warehouse
+    // Check if there are items linked to this warehouse manually
     getItems()
-      .then((items) => {
-        const whItems = items.filter(item => parseInt(item.warehouseId) === whId);
+      .then(function(items) {
+        var whItems = [];
+        for (var i = 0; i < items.length; i++) {
+          if (parseInt(items[i].warehouseId) === whId) {
+            whItems.push(items[i]);
+          }
+        }
         
         if (whItems.length > 0) {
           // Items exist! Show relation manager modal
@@ -773,49 +833,63 @@ $(document).ready(function() {
           openModal("modal-delete-warehouse");
         } else {
           // No items linked, can delete immediately with standard alert confirmation
-          if (confirm(`Are you sure you want to delete warehouse '${whName}'?`)) {
-            performWarehouseDelete(whId, []);
+          if (confirm("Are you sure you want to delete warehouse '" + whName + "'?")) {
+            performWarehouseDelete(whId, [], "");
           }
         }
       })
-      .catch((err) => {
+      .catch(function(err) {
         showToast("Database query error: " + err, true);
       });
   });
 
   // Confirm delete on relation manager modal
   $("#btn-confirm-warehouse-delete").click(function() {
-    const strategy = $("input[name='delete-relation-strategy']:checked").val();
-    const whId = warehouseIdToDelete;
+    var strategy = $("input[name='delete-relation-strategy']:checked").val();
+    var whId = warehouseIdToDelete;
 
     if (!whId) return;
 
     getItems()
-      .then((items) => {
-        const whItems = items.filter(item => parseInt(item.warehouseId) === whId);
+      .then(function(items) {
+        var whItems = [];
+        for (var i = 0; i < items.length; i++) {
+          if (parseInt(items[i].warehouseId) === whId) {
+            whItems.push(items[i]);
+          }
+        }
 
         if (strategy === "cascade") {
-          // Cascade: Delete all items in IndexedDB
-          const deletePromises = whItems.map(item => deleteItem(item.id));
+          // Cascade: Delete all items in IndexedDB manually loop and delete
+          var deletePromises = [];
+          for (var j = 0; j < whItems.length; j++) {
+            deletePromises.push(deleteItem(whItems[j].id));
+          }
           
           Promise.all(deletePromises)
-            .then(() => {
+            .then(function() {
               performWarehouseDelete(whId, [], "and all its stored items were deleted.");
             })
-            .catch(err => showToast("Error executing cascade item deletions: " + err, true));
+            .catch(function(err) {
+              showToast("Error executing cascade item deletions: " + err, true);
+            });
 
         } else if (strategy === "disassociate") {
-          // Disassociate: Set warehouseId to null
-          const updatePromises = whItems.map(item => {
+          // Disassociate: Set warehouseId to null/empty
+          var updatePromises = [];
+          for (var k = 0; k < whItems.length; k++) {
+            var item = whItems[k];
             item.warehouseId = ""; // empty/unassigned
-            return updateItem(item);
-          });
+            updatePromises.push(updateItem(item));
+          }
 
           Promise.all(updatePromises)
-            .then(() => {
+            .then(function() {
               performWarehouseDelete(whId, [], "and items were set to Unassigned.");
             })
-            .catch(err => showToast("Error disassociating warehouse items: " + err, true));
+            .catch(function(err) {
+              showToast("Error disassociating warehouse items: " + err, true);
+            });
         }
 
         closeModal("modal-delete-warehouse");
@@ -823,32 +897,32 @@ $(document).ready(function() {
   });
 
   // Internal deletion runner
-  function performWarehouseDelete(id, items, extraMessage = "") {
+  function performWarehouseDelete(id, items, extraMessage) {
     deleteWarehouse(id)
-      .then(() => {
+      .then(function() {
         refreshData();
-        showToast(`Warehouse deleted successfully ${extraMessage}`);
+        showToast("Warehouse deleted successfully " + extraMessage);
         warehouseIdToDelete = null;
       })
-      .catch((err) => {
+      .catch(function(err) {
         showToast("Could not complete warehouse delete: " + err, true);
       });
   }
 
   // B. Delete Item Action
   $(document).on("click", ".btn-delete-item", function() {
-    const itemId = parseInt($(this).attr("data-id"));
+    var itemId = parseInt($(this).attr("data-id"));
     
-    getItem(itemId).then((item) => {
+    getItem(itemId).then(function(item) {
       if (!item) return;
 
-      if (confirm(`Remove item '${item.name}' (SKU: ${item.sku}) from inventory?`)) {
+      if (confirm("Remove item '" + item.name + "' (SKU: " + item.sku + ") from inventory?")) {
         deleteItem(itemId)
-          .then(() => {
+          .then(function() {
             refreshData();
-            showToast(`Item '${item.name}' removed from stock.`);
+            showToast("Item '" + item.name + "' removed from stock.");
           })
-          .catch((err) => {
+          .catch(function(err) {
             showToast("Failed to delete item: " + err, true);
           });
       }
@@ -858,10 +932,10 @@ $(document).ready(function() {
 
   // --- TOAST ALERTS ---
 
-  function showToast(message, isError = false) {
-    const toast = $("#toast");
-    const toastMessage = $("#toast-message");
-    const iconContainer = $("#toast-icon-container");
+  function showToast(message, isError) {
+    var toast = $("#toast");
+    var toastMessage = $("#toast-message");
+    var iconContainer = $("#toast-icon-container");
     
     // Clear animation states
     toast.stop(true, true);
