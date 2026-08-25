@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cytan WHS - Mini Warehouse Management</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Custom tailwind config to define theme matching the reference screenshot -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: {
+              950: '#031022',
+              900: '#0a1d37',
+              800: '#0f294a',
+              700: '#1e3a5f',
+              600: '#2b4c7e',
+              500: '#3a5f97',
+            },
+            sky: {
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+            },
+            emerald: {
+              500: '#10b981',
+              600: '#059669',
+              900: '#064e3b',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- jQuery CDN -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
+
+  <!-- HEADER (Reference WiserACC header) -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40 transition-shadow duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-20 items-center">
+        <!-- Logo Area -->
+        <div class="flex items-center space-x-3 cursor-pointer" id="nav-logo">
+          <div class="relative w-11 h-11 bg-gradient-to-tr from-blue-600 to-sky-400 rounded-xl flex items-center justify-center shadow-md shadow-blue-500/20">
+            <!-- Icon resembling the double loops / stylized wave W -->
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+            </svg>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-xl font-bold tracking-tight text-navy-900 leading-none">Cytan <span class="text-sky-500">WHS</span></span>
+            <span class="text-[10px] font-semibold text-slate-400 tracking-widest uppercase mt-0.5">Warehouse System</span>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="hidden md:flex space-x-8 h-full items-center">
+          <button id="tab-dashboard" class="nav-tab h-full px-2 border-b-2 border-sky-500 font-semibold text-sky-600 text-sm transition-all flex items-center space-x-2">
+            <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+            <span>Dashboard</span>
+          </button>
+          <button id="tab-warehouses" class="nav-tab h-full px-2 border-b-2 border-transparent font-medium text-slate-500 hover:text-navy-900 hover:border-slate-300 text-sm transition-all flex items-center space-x-2">
+            <i data-lucide="warehouse" class="w-4 h-4"></i>
+            <span>Warehouses</span>
+          </button>
+          <button id="tab-items" class="nav-tab h-full px-2 border-b-2 border-transparent font-medium text-slate-500 hover:text-navy-900 hover:border-slate-300 text-sm transition-all flex items-center space-x-2">
+            <i data-lucide="package" class="w-4 h-4"></i>
+            <span>Items Inventory</span>
+          </button>
+        </nav>
+
+        <!-- Action / Quick Add buttons -->
+        <div class="flex items-center space-x-3">
+          <button id="btn-quick-warehouse" class="bg-slate-100 hover:bg-slate-200 text-navy-900 px-4 py-2.5 rounded-lg text-xs font-semibold tracking-wide transition-colors uppercase border border-slate-200 flex items-center space-x-1.5">
+            <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+            <span>Add WH</span>
+          </button>
+          <button id="btn-quick-item" class="bg-navy-950 hover:bg-navy-900 text-white px-5 py-2.5 rounded-lg text-xs font-semibold tracking-wide transition-all shadow-md shadow-navy-900/10 uppercase flex items-center space-x-1.5 hover:scale-[1.02]">
+            <i data-lucide="package-plus" class="w-3.5 h-3.5"></i>
+            <span>Request Item</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO BANNER (Reference WiserACC dark hero area) -->
+  <section class="hero-grid text-white py-14 px-4 sm:px-6 lg:px-8 relative overflow-hidden shadow-inner">
+    <div class="absolute inset-0 bg-gradient-to-r from-navy-950/80 to-transparent pointer-events-none"></div>
+    <div class="max-w-7xl mx-auto relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+      
+      <!-- Hero Left Text -->
+      <div class="max-w-2xl space-y-5">
+        <div class="inline-flex items-center space-x-2 bg-emerald-900/40 border border-emerald-500/30 text-emerald-400 px-3 py-1.5 rounded-full text-xs font-medium uppercase tracking-wider">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>Cytan WHS Intelligence & sidefu logistics</span>
+        </div>
+        <h1 class="text-4xl sm:text-5xl font-bold leading-none tracking-tight">
+          Industrial Storage.<br>
+          <span class="text-sky-400">Smart Warehousing.</span><br>
+          Complete Inventory.
+        </h1>
+        <p class="text-slate-300 text-sm sm:text-base max-w-lg leading-relaxed">
+          Cytan WHS provides a state-of-the-art interface to track real-time capacity and inventory status. Seamlessly manage warehouse allocations with local persistence.
+        </p>
+      </div>
+
+      <!-- Hero Right Stat Cards (Overlapping styled) -->
+      <div class="grid grid-cols-2 gap-4 w-full lg:max-w-md">
+        <!-- Stat 1 -->
+        <div class="glass-card p-5 rounded-2xl flex flex-col justify-between">
+          <div class="flex items-center justify-between text-slate-400">
+            <span class="text-xs font-semibold uppercase tracking-wider">Warehouses</span>
+            <div class="p-1.5 bg-sky-500/10 rounded-lg text-sky-400">
+              <i data-lucide="warehouse" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div class="mt-4">
+            <span class="text-3xl font-bold text-white tracking-tight" id="stat-warehouses-count">0</span>
+            <p class="text-[10px] text-emerald-400 font-medium flex items-center space-x-1 mt-1">
+              <i data-lucide="activity" class="w-3 h-3"></i>
+              <span>Active Storage Hubs</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Stat 2 -->
+        <div class="glass-card p-5 rounded-2xl flex flex-col justify-between">
+          <div class="flex items-center justify-between text-slate-400">
+            <span class="text-xs font-semibold uppercase tracking-wider">Total Items</span>
+            <div class="p-1.5 bg-blue-500/10 rounded-lg text-blue-400">
+              <i data-lucide="package" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div class="mt-4">
+            <span class="text-3xl font-bold text-white tracking-tight" id="stat-items-count">0</span>
+            <p class="text-[10px] text-slate-400 font-medium flex items-center space-x-1 mt-1">
+              <span>Overall Stock Count</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Stat 3 -->
+        <div class="glass-card p-5 rounded-2xl flex flex-col justify-between">
+          <div class="flex items-center justify-between text-slate-400">
+            <span class="text-xs font-semibold uppercase tracking-wider">Total Inventory</span>
+            <div class="p-1.5 bg-emerald-500/10 rounded-lg text-emerald-400">
+              <i data-lucide="dollar-sign" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div class="mt-4">
+            <span class="text-3xl font-bold text-white tracking-tight" id="stat-total-value">$0.00</span>
+            <p class="text-[10px] text-emerald-400 font-medium flex items-center space-x-1 mt-1">
+              <span>Estimated Valuation</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Stat 4 -->
+        <div class="glass-card p-5 rounded-2xl flex flex-col justify-between">
+          <div class="flex items-center justify-between text-slate-400">
+            <span class="text-xs font-semibold uppercase tracking-wider">Capacity Util.</span>
+            <div class="p-1.5 bg-yellow-500/10 rounded-lg text-yellow-400">
+              <i data-lucide="pie-chart" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div class="mt-4">
+            <span class="text-3xl font-bold text-white tracking-tight" id="stat-utilization-pct">0%</span>
+            <div class="w-full bg-navy-800 rounded-full h-1.5 mt-2 overflow-hidden">
+              <div id="stat-utilization-bar" class="bg-gradient-to-r from-sky-400 to-emerald-400 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- Toast Notification Banner -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 flex items-center space-x-3 bg-navy-900 border border-navy-800 text-white px-5 py-3.5 rounded-xl shadow-2xl transition-all duration-300 translate-y-20 opacity-0 pointer-events-none">
+      <div class="p-1 bg-emerald-500/20 rounded-lg text-emerald-400" id="toast-icon-container">
+        <i data-lucide="check" class="w-4 h-4" id="toast-icon"></i>
+      </div>
+      <span class="text-xs font-semibold text-slate-100" id="toast-message">Success! Action completed.</span>
+    </div>
+
+    <!-- ================= VIEW 1: DASHBOARD ================= -->
+    <div id="view-dashboard" class="view-content fade-in space-y-8">
+      
+      <!-- Quick Status Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Left: Low Stock Alerts -->
+        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 lg:col-span-2 flex flex-col">
+          <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+            <div class="flex items-center space-x-2.5">
+              <div class="p-2 bg-rose-50 rounded-lg text-rose-500">
+                <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-navy-900">Low Stock Alerts</h3>
+                <p class="text-xs text-slate-500">Items containing fewer than 10 units</p>
+              </div>
+            </div>
+            <span class="text-xs font-semibold bg-rose-50 text-rose-600 px-2.5 py-1 rounded-full" id="low-stock-badge">0 items</span>
+          </div>
+          <div class="overflow-x-auto mt-4 flex-grow">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="text-slate-400 font-semibold uppercase border-b border-slate-100">
+                  <th class="py-3 px-1">SKU</th>
+                  <th class="py-3 px-1">Name</th>
+                  <th class="py-3 px-1">Warehouse</th>
+                  <th class="py-3 px-1 text-right">Quantity</th>
+                  <th class="py-3 px-1 text-center">Status</th>
+                </tr>
+              </thead>
+              <tbody id="dashboard-low-stock-body" class="divide-y divide-slate-100 text-slate-700">
+                <!-- Dynamic Content -->
+                <tr>
+                  <td colspan="5" class="py-8 text-center text-slate-400">
+                    <i data-lucide="check-circle" class="w-6 h-6 mx-auto mb-2 text-emerald-400"></i>
+                    All items are well stocked.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Right: Warehouse Capacity Status List -->
+        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 flex flex-col">
+          <div class="flex items-center space-x-2.5 pb-4 border-b border-slate-100">
+            <div class="p-2 bg-sky-50 rounded-lg text-sky-600">
+              <i data-lucide="activity" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-navy-900">Warehouse Capacities</h3>
+              <p class="text-xs text-slate-500">Resource utilization monitoring</p>
+            </div>
+          </div>
+          <div class="mt-4 space-y-4 flex-grow overflow-y-auto max-h-[300px] pr-1" id="dashboard-capacities-list">
+            <!-- Dynamic Content -->
+            <div class="text-center text-slate-400 py-8">
+              No warehouses available. Add one to start tracking.
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom: Recent Inventory Additions -->
+      <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+          <div class="flex items-center space-x-2.5">
+            <div class="p-2 bg-blue-50 rounded-lg text-blue-600">
+              <i data-lucide="clock" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-navy-900">Recent Additions</h3>
+              <p class="text-xs text-slate-500">The last 5 items logged in the system</p>
+            </div>
+          </div>
+          <button id="btn-view-all-items" class="text-xs font-semibold text-sky-500 hover:text-sky-600 flex items-center space-x-1">
+            <span>View All Inventory</span>
+            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+        <div class="overflow-x-auto mt-4">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="text-slate-400 font-semibold uppercase border-b border-slate-100">
+                <th class="py-3 px-4">SKU</th>
+                <th class="py-3 px-4">Item Name</th>
+                <th class="py-3 px-4">Warehouse</th>
+                <th class="py-3 px-4 text-right">Price</th>
+                <th class="py-3 px-4 text-right">Quantity</th>
+                <th class="py-3 px-4 text-right">Total Value</th>
+              </tr>
+            </thead>
+            <tbody id="dashboard-recent-items-body" class="divide-y divide-slate-100 text-slate-700">
+              <!-- Dynamic Content -->
+              <tr>
+                <td colspan="6" class="py-8 text-center text-slate-400">No items available. Add inventory to display.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- ================= VIEW 2: WAREHOUSES ================= -->
+    <div id="view-warehouses" class="view-content fade-in hidden space-y-6">
+      
+      <!-- Top Action Bar -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white border border-slate-200 p-5 rounded-2xl shadow-sm">
+        <div>
+          <h2 class="text-xl font-bold text-navy-900">Warehouses Directory</h2>
+          <p class="text-xs text-slate-500">Manage storage facilities, capacities, and locations</p>
+        </div>
+        <button id="btn-add-warehouse" class="bg-navy-950 hover:bg-navy-900 text-white px-5 py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors flex items-center space-x-1.5 self-start sm:self-auto">
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          <span>Add Warehouse</span>
+        </button>
+      </div>
+
+      <!-- Warehouse Table/Grid Container -->
+      <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm border-collapse">
+            <thead>
+              <tr class="bg-slate-50/70 border-b border-slate-200 text-slate-400 font-semibold uppercase text-xs">
+                <th class="py-4 px-6">Code</th>
+                <th class="py-4 px-6">Warehouse Name</th>
+                <th class="py-4 px-6">Location</th>
+                <th class="py-4 px-6 text-right">Item Types</th>
+                <th class="py-4 px-6 text-right">Capacity Utilization</th>
+                <th class="py-4 px-6 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="warehouses-table-body" class="divide-y divide-slate-100 text-slate-700">
+              <!-- Dynamic Rows -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- ================= VIEW 3: ITEMS INVENTORY ================= -->
+    <div id="view-items" class="view-content fade-in hidden space-y-6">
+      
+      <!-- Filter and Action Bar -->
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white border border-slate-200 p-5 rounded-2xl shadow-sm">
+        <div class="flex-grow max-w-md">
+          <h2 class="text-xl font-bold text-navy-900">Inventory Management</h2>
+          <p class="text-xs text-slate-500">Monitor stock levels, SKUs, pricing, and storage assignments</p>
+        </div>
+        
+        <!-- Search and Filter Controls -->
+        <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+          <div class="relative flex-grow sm:flex-grow-0">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 pointer-events-none">
+              <i data-lucide="search" class="w-4 h-4"></i>
+            </span>
+            <input type="text" id="filter-item-search" placeholder="Search SKU or Name..." class="pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-xs w-full sm:w-60 focus:outline-none focus:ring-2 focus:ring-sky-500/25 focus:border-sky-500 transition-all">
+          </div>
+          
+          <select id="filter-item-warehouse" class="py-2 px-3 border border-slate-200 rounded-lg text-xs bg-white focus:outline-none focus:ring-2 focus:ring-sky-500/25 focus:border-sky-500 transition-all">
+            <option value="all">All Warehouses</option>
+            <!-- Dynamically populated options -->
+          </select>
+
+          <button id="btn-add-item" class="bg-navy-950 hover:bg-navy-900 text-white px-5 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors flex items-center justify-center space-x-1.5">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            <span>Add Item</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Inventory Table -->
+      <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm border-collapse">
+            <thead>
+              <tr class="bg-slate-50/70 border-b border-slate-200 text-slate-400 font-semibold uppercase text-xs">
+                <th class="py-4 px-6">SKU</th>
+                <th class="py-4 px-6">Item Name</th>
+                <th class="py-4 px-6">Assigned Warehouse</th>
+                <th class="py-4 px-6 text-right">Unit Price</th>
+                <th class="py-4 px-6 text-right">Quantity</th>
+                <th class="py-4 px-6 text-right">Valuation</th>
+                <th class="py-4 px-6 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="items-table-body" class="divide-y divide-slate-100 text-slate-700">
+              <!-- Dynamic Rows -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-white border-t border-slate-200 py-6 mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-400 text-xs font-medium">
+      <div class="flex items-center space-x-2">
+        <span class="font-bold text-navy-900">Cytan <span class="text-sky-500">WHS</span></span>
+        <span>&copy; 2026. All rights reserved.</span>
+      </div>
+      <div class="flex space-x-6">
+        <a href="#" class="hover:text-navy-900 transition-colors">Privacy Policy</a>
+        <a href="#" class="hover:text-navy-900 transition-colors">Terms of Service</a>
+        <a href="#" class="hover:text-navy-900 transition-colors">Support Desk</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ================= MODALS ================= -->
+
+  <!-- WAREHOUSE CRUD MODAL -->
+  <div id="modal-warehouse" class="fixed inset-0 z-50 overflow-y-auto hidden">
+    <!-- Dark Backdrop overlay -->
+    <div class="fixed inset-0 bg-navy-950/60 backdrop-blur-sm transition-opacity duration-300"></div>
+    
+    <div class="flex items-center justify-center min-h-screen p-4">
+      <div class="relative bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-100 transform scale-95 transition-all duration-300 fade-in">
+        
+        <!-- Modal Header -->
+        <div class="bg-navy-950 px-6 py-5 flex items-center justify-between text-white hero-grid">
+          <div>
+            <h3 class="text-lg font-bold" id="modal-warehouse-title">Add New Warehouse</h3>
+            <p class="text-xs text-slate-300 mt-0.5">Define storage facility settings</p>
+          </div>
+          <button class="btn-close-modal p-1.5 hover:bg-white/10 rounded-lg text-slate-300 hover:text-white transition-colors" data-modal="modal-warehouse">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <!-- Modal Body / Form -->
+        <form id="form-warehouse" class="p-6 space-y-4">
+          <!-- Hidden ID input for updating -->
+          <input type="hidden" id="warehouse-id" name="id">
+
+          <div class="space-y-1">
+            <label for="warehouse-code" class="text-xs font-bold text-navy-900 uppercase tracking-wider">Warehouse Code</label>
+            <input type="text" id="warehouse-code" name="code" placeholder="e.g. WH-001" required 
+              class="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/25 focus:border-sky-500 transition-all font-semibold text-navy-900">
+          </div>
+
+          <div class="space-y-1">
+            <label for="warehouse-name" class="text-xs font-bold text-navy-900 uppercase tracking-wider">Warehouse Name</label>
+            <input type="text" id="warehouse-name" name="name" placeholder="e.g. Main Distribution Center" required 
+              class="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/25 focus:border-sky-500 transition-all text-navy-900">
+          </div>
+
+          <div class="space-y-1">
+            <label for="warehouse-location" class="text-xs font-bold text-navy-900 uppercase tracking-wider">Location</label>
+            <input type="text" id="warehouse-location" name="location" placeholder="e.g. Shanghai Port Facility" required 
+              class="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/25 focus:border-sky-500 transition-all text-navy-900">
+          </div>
+
+          <div class="space-y-1">
+            <label for="warehouse-capacity" class="text-xs font-bold text-navy-900 uppercase tracking-wider">Storage Capacity (Units limit)</label>
+            <input type="number" id="warehouse-capacity" name="capacity" min="1" placeholder="e.g. 5000" required 
+              class="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/25 focus:border-sky-500 transition-all text-navy-900">
+          </div>
+
+          <div class="flex items-center justify-end space-x-3 pt-4 border-t border-slate-100">
+            <button type="button" class="btn-close-modal border border-slate-200 text-slate-500 hover:bg-slate-50 px-4 py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors" data-modal="modal-warehouse">
+              Cancel
+            </button>
+            <button type="submit" class="bg-navy-950 hover:bg-navy-900 text-white px-5 py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors shadow-md shadow-navy-900/10">
+              Save Warehouse
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ITEM CRUD MODAL -->
+  <div id="modal-item" class="fixed inset-0 z-50 overflow-y-auto hidden">
+    <!-- Dark Backdrop overlay -->
+    <div class="fixed inset-0 bg-navy-950/60 backdrop-blur-sm transition-opacity duration-300"></div>
+    
+    <div class="flex items-center justify-center min-h-screen p-4">
+      <div class="relative bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-100 transform scale-95 transition-all duration-300 fade-in">
+        
+        <!-- Modal Header -->
+        <div class="bg-navy-950 px-6 py-5 flex items-center justify-between text-white hero-grid">
+          <div>
+            <h3 class="text-lg font-bold" id="modal-item-title">Add New Item</h3>
+            <p class="text-xs text-slate-300 mt-0.5">Define material and stock details</p>
+          </div>
+          <button class="btn-close-modal p-1.5 hover:bg-white/10 rounded-lg text-slate-300 hover:text-white transition-colors" data-modal="modal-item">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <!-- Modal Body / Form -->
+        <form id="form-item" class="p-6 space-y-4">
+          <!-- Hidden ID input for updating -->
+          <input type="hidden" id="item-id" name="id">
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <label for="item-sku" class="text-xs font-bold text-navy-900 uppercase tracking-wider">SKU Code</label>
+              <input type="text" id="item-sku" name="sku" placeholder="e.g. SKU-1001" required 
+                class="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/25 focus:border-sky-500 transition-all font-semibold text-navy-900">
+            </div>
+
+            <div class="space-y-1">
+              <label for="item-warehouse" class="text-xs font-bold text-navy-900 uppercase tracking-wider">Warehouse</label>
+              <select id="item-warehouse" name="warehouseId" required
+                class="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-xs bg-white focus:outline-none focus:ring-2 focus:ring-sky-500/25 focus:border-sky-500 transition-all text-navy-900 font-medium">
+                <option value="" disabled selected>Select location...</option>
+                <!-- Dynamically populated -->
+              </select>
+            </div>
+          </div>
+
+          <div class="space-y-1">
+            <label for="item-name" class="text-xs font-bold text-navy-900 uppercase tracking-wider">Item Name</label>
+            <input type="text" id="item-name" name="name" placeholder="e.g. 5-Star Hotel Fitted Linens" required 
+              class="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/25 focus:border-sky-500 transition-all text-navy-900">
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <label for="item-quantity" class="text-xs font-bold text-navy-900 uppercase tracking-wider">Quantity (Units)</label>
+              <input type="number" id="item-quantity" name="quantity" min="0" placeholder="e.g. 250" required 
+                class="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/25 focus:border-sky-500 transition-all text-navy-900">
+            </div>
+
+            <div class="space-y-1">
+              <label for="item-price" class="text-xs font-bold text-navy-900 uppercase tracking-wider">Unit Price ($)</label>
+              <input type="number" id="item-price" name="price" min="0" step="0.01" placeholder="e.g. 24.50" required 
+                class="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/25 focus:border-sky-500 transition-all text-navy-900">
+            </div>
+          </div>
+
+          <div class="flex items-center justify-end space-x-3 pt-4 border-t border-slate-100">
+            <button type="button" class="btn-close-modal border border-slate-200 text-slate-500 hover:bg-slate-50 px-4 py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors" data-modal="modal-item">
+              Cancel
+            </button>
+            <button type="submit" class="bg-navy-950 hover:bg-navy-900 text-white px-5 py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors shadow-md shadow-navy-900/10">
+              Save Inventory Item
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- WAREHOUSE DELETE INTEGRITY MODAL (RELATION MANAGEMENT) -->
+  <div id="modal-delete-warehouse" class="fixed inset-0 z-50 overflow-y-auto hidden">
+    <!-- Dark Backdrop overlay -->
+    <div class="fixed inset-0 bg-navy-950/60 backdrop-blur-sm transition-opacity duration-300"></div>
+    
+    <div class="flex items-center justify-center min-h-screen p-4">
+      <div class="relative bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-100 transform scale-95 transition-all duration-300 fade-in">
+        
+        <!-- Modal Header -->
+        <div class="bg-rose-900 px-6 py-5 flex items-center justify-between text-white">
+          <div>
+            <h3 class="text-lg font-bold">Relationship Integrity Action Required</h3>
+            <p class="text-xs text-rose-200 mt-0.5">Linked items detected in warehouse</p>
+          </div>
+          <button class="btn-close-modal p-1.5 hover:bg-white/10 rounded-lg text-rose-200 hover:text-white transition-colors" data-modal="modal-delete-warehouse">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <!-- Modal Body / Selection -->
+        <div class="p-6 space-y-4">
+          <p class="text-xs text-slate-600 leading-relaxed">
+            The warehouse <span class="font-bold text-navy-900" id="delete-wh-name">Warehouse</span> has <span class="font-bold text-rose-600" id="delete-wh-items-count">0</span> items currently stored inside it. How would you like to handle these linked items?
+          </p>
+
+          <div class="space-y-2.5">
+            <!-- Cascade Delete Option -->
+            <label class="flex items-start p-3.5 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-all select-none group relative">
+              <input type="radio" name="delete-relation-strategy" value="cascade" checked class="mt-1 text-rose-600 focus:ring-rose-500">
+              <div class="ml-3 flex flex-col">
+                <span class="text-xs font-bold text-slate-900 group-hover:text-rose-600 transition-colors">Cascade Delete Items</span>
+                <span class="text-[10px] text-slate-400 mt-0.5">Delete all associated items from the database permanently.</span>
+              </div>
+            </label>
+
+            <!-- Disassociate Option -->
+            <label class="flex items-start p-3.5 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-all select-none group">
+              <input type="radio" name="delete-relation-strategy" value="disassociate" class="mt-1 text-slate-600 focus:ring-slate-500">
+              <div class="ml-3 flex flex-col">
+                <span class="text-xs font-bold text-slate-900 group-hover:text-navy-600 transition-colors">Disassociate Items</span>
+                <span class="text-[10px] text-slate-400 mt-0.5">Keep the items but set their warehouse to "Unassigned" so they can be re-allocated.</span>
+              </div>
+            </label>
+          </div>
+
+          <div class="flex items-center justify-end space-x-3 pt-4 border-t border-slate-100">
+            <button type="button" class="btn-close-modal border border-slate-200 text-slate-500 hover:bg-slate-50 px-4 py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors" data-modal="modal-delete-warehouse">
+              Cancel Deletion
+            </button>
+            <button type="button" id="btn-confirm-warehouse-delete" class="bg-rose-600 hover:bg-rose-700 text-white px-5 py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors shadow-md shadow-rose-600/10">
+              Confirm Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive script loader to ensure everything runs smoothly -->
+  <script src="app.js"></script>
+</body>
+</html>
